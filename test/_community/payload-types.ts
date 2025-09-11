@@ -69,15 +69,27 @@ export interface Config {
   collections: {
     posts: Post;
     media: Media;
+    departments: Department;
+    'staff-roles': StaffRole;
+    'student-roles': StudentRole;
+    people: Person;
     users: User;
     'payload-locked-documents': PayloadLockedDocument;
     'payload-preferences': PayloadPreference;
     'payload-migrations': PayloadMigration;
   };
-  collectionsJoins: {};
+  collectionsJoins: {
+    people: {
+      roles: 'staff-roles' | 'student-roles';
+    };
+  };
   collectionsSelect: {
     posts: PostsSelect<false> | PostsSelect<true>;
     media: MediaSelect<false> | MediaSelect<true>;
+    departments: DepartmentsSelect<false> | DepartmentsSelect<true>;
+    'staff-roles': StaffRolesSelect<false> | StaffRolesSelect<true>;
+    'student-roles': StudentRolesSelect<false> | StudentRolesSelect<true>;
+    people: PeopleSelect<false> | PeopleSelect<true>;
     users: UsersSelect<false> | UsersSelect<true>;
     'payload-locked-documents': PayloadLockedDocumentsSelect<false> | PayloadLockedDocumentsSelect<true>;
     'payload-preferences': PayloadPreferencesSelect<false> | PayloadPreferencesSelect<true>;
@@ -190,6 +202,64 @@ export interface Media {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "departments".
+ */
+export interface Department {
+  id: string;
+  name: string;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "staff-roles".
+ */
+export interface StaffRole {
+  id: string;
+  department?: (string | null) | Department;
+  person?: (string | null) | Person;
+  role?: string | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "people".
+ */
+export interface Person {
+  id: string;
+  name: string;
+  roles?: {
+    docs?: (
+      | {
+          relationTo?: 'staff-roles';
+          value: string | StaffRole;
+        }
+      | {
+          relationTo?: 'student-roles';
+          value: string | StudentRole;
+        }
+    )[];
+    hasNextPage?: boolean;
+    totalDocs?: number;
+  };
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "student-roles".
+ */
+export interface StudentRole {
+  id: string;
+  department?: (string | null) | Department;
+  person?: (string | null) | Person;
+  graduationYear?: number | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "users".
  */
 export interface User {
@@ -226,6 +296,22 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'media';
         value: string | Media;
+      } | null)
+    | ({
+        relationTo: 'departments';
+        value: string | Department;
+      } | null)
+    | ({
+        relationTo: 'staff-roles';
+        value: string | StaffRole;
+      } | null)
+    | ({
+        relationTo: 'student-roles';
+        value: string | StudentRole;
+      } | null)
+    | ({
+        relationTo: 'people';
+        value: string | Person;
       } | null)
     | ({
         relationTo: 'users';
@@ -333,6 +419,47 @@ export interface MediaSelect<T extends boolean = true> {
               filename?: T;
             };
       };
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "departments_select".
+ */
+export interface DepartmentsSelect<T extends boolean = true> {
+  name?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "staff-roles_select".
+ */
+export interface StaffRolesSelect<T extends boolean = true> {
+  department?: T;
+  person?: T;
+  role?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "student-roles_select".
+ */
+export interface StudentRolesSelect<T extends boolean = true> {
+  department?: T;
+  person?: T;
+  graduationYear?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "people_select".
+ */
+export interface PeopleSelect<T extends boolean = true> {
+  name?: T;
+  roles?: T;
+  updatedAt?: T;
+  createdAt?: T;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
